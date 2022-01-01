@@ -7,7 +7,7 @@ public class WorldManager : MonoBehaviour
     #region Attributes
     static WorldGenerator worldGenerator;
     static Dictionary<Vector2Int, GameObject> gameObjects = new Dictionary<Vector2Int, GameObject>();
-
+    static ZuAnimation zuAnimation;
     #endregion
 
     static public void GenerateWorld(GameState state)
@@ -17,6 +17,7 @@ public class WorldManager : MonoBehaviour
         worldGenerator.Generate(state);
         GameObject.FindGameObjectWithTag("Zu").transform.position =
             new Vector2(state.ZuPosition.y + 0.5f, state.ZuPosition.x + 0.5f);
+        zuAnimation = GameObject.FindGameObjectWithTag("Zu").GetComponent<ZuAnimation>();
     }
 
     static public void AddObject(Vector2Int position, GameObject obj)
@@ -32,4 +33,12 @@ public class WorldManager : MonoBehaviour
     {
         gameObjects[position].GetComponent<Placeholder>().Close();
     }
+
+    static public void RunIntoState(GameState state)
+    {
+        Debug.Log(state.LastAction);
+        Debug.Log(state.PickedupCoins.Count);
+        zuAnimation.Act(new Vector2Int(state.ZuPosition.y, state.ZuPosition.x) , state.LastAction);
+    }
+
 }

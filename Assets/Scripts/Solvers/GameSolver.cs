@@ -5,7 +5,8 @@ using UnityEngine;
 
 public class GameSolver
 {
-    Dictionary<string, Node> NodeMap = new Dictionary<string, Node>();
+
+    HashSet<string> NodeMap = new HashSet<string>();
 
     public void addInOrderPosition(ref List<Node> pQueue, Node newNode)
     {
@@ -22,11 +23,11 @@ public class GameSolver
             }
     }
 
-    public async Task<Stack<Node>> UCS_Solver(GameState startState)
+    public async Task<Stack<GameState>> UCS_Solver(GameState startState)
     {
         return await Task.Run(() =>
         {
-            Stack<Node> path = new Stack<Node>();
+            Stack<GameState> path = new Stack<GameState>();
 
             // Visited Nodes Counter
             double visitedNodes = 0;
@@ -35,11 +36,10 @@ public class GameSolver
 
             Node startNode = new Node(startState, null);
 
-            NodeMap.Add(startState.GetStringHashcode(), startNode);
+            NodeMap.Add(startState.GetStringHashcode());
 
             Node finalNode = null;
 
-            Node prevNode = null;
 
             List<Node> priorityQueue = new List<Node>
             {
@@ -64,17 +64,17 @@ public class GameSolver
 
                 foreach (var state in nextStates)
                 {
-                    if (!NodeMap.ContainsKey(state.GetStringHashcode()))
+                    if (!NodeMap.Contains(state.GetStringHashcode()))
                     {
                         Node newNode = new Node(state, currentNode);
-                        NodeMap.Add(newNode.GetState().GetStringHashcode(), newNode);
+                        NodeMap.Add(newNode.GetState().GetStringHashcode());
                         addInOrderPosition(ref priorityQueue, newNode);
                     }
                 }
             }
             while (finalNode != null)
             {
-                path.Push(finalNode);
+                path.Push(finalNode.GetState());
                 finalNode = finalNode.GetPrevNode();
             }
             Debug.LogWarning("Visited Nodes = " + visitedNodes);
@@ -95,6 +95,7 @@ public class Node
         this.prevNode = prevNode;
         if (prevNode != null)
             this.cost += prevNode.cost;
+        cost += state.PickedupCoins.Count;
     }
     public GameState GetState() { return state; }
     public Node GetPrevNode() { return prevNode; }

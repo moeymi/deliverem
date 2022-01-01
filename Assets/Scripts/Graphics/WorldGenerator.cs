@@ -55,7 +55,7 @@ public class WorldGenerator : MonoBehaviour
                     GameObject coin = Instantiate(Coin);
                     coin.transform.position = new Vector3(j + 0.5f, i + 0.5f);
                     coin.GetComponent<SpriteRenderer>().color = color;
-                    WorldManager.AddObject(new Vector2Int(i, j), coin);
+                    WorldManager.AddObject(new Vector2Int(j, i), coin);
                 }
                 else if(grid[i, j].type == GameCellType.Destination)
                 {
@@ -74,7 +74,7 @@ public class WorldGenerator : MonoBehaviour
                     GameObject placeholder = Instantiate(Placeholder);
                     placeholder.transform.position = new Vector3(j + 0.5f, i + 0.5f);
                     placeholder.GetComponent<SpriteRenderer>().color = color;
-                    WorldManager.AddObject(new Vector2Int(i, j), placeholder);
+                    WorldManager.AddObject(new Vector2Int(j, i), placeholder);
                 }
             }
         }

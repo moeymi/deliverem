@@ -123,7 +123,7 @@ public class GameState
                     newPickedCoins.RemoveAt(i);
                     newState.PickedupCoins = newPickedCoins;
 
-                    newState.SetAction(Action.Pickup); 
+                    newState.SetAction(Action.Deliver); 
 
                     gameStates.Add(newState);
 
@@ -145,7 +145,7 @@ public class GameState
 
             newState.SetEmpty(newPosition);
 
-            newState.SetAction(Action.Deliver);
+            newState.SetAction(Action.Pickup);
 
             gameStates.Add(newState);
         }
@@ -239,6 +239,10 @@ public class GameState
     {
         get { return pickedUpCoins; }
         set { pickedUpCoins = value; }
+    }
+    public Action LastAction
+    {
+        get { return lastAction; }
     }
     public bool isFinalState()
     {
