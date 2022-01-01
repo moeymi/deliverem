@@ -73,7 +73,7 @@ public class GameState
         }
         reader.Close();
     }
-    public List<GameState> GetNextState()
+    public List<GameState> GetNextStates()
     {
         List<GameState> gameStates = new List<GameState>();
         return gameStates;
