@@ -7,7 +7,22 @@ public class Solver
 {
     Dictionary<string, Node> NodeMap = new Dictionary<string, Node>();
 
-    public async Task<Stack<Node>> UCS_Solver (GameState startState)
+    public void addInOrderPosition(ref List<Node> pQueue, Node newNode)
+    {
+        pQueue.Add(newNode);
+        if (pQueue.Count > 1)
+            for (int i = pQueue.Count - 1; i > 0; i--)
+            {
+                if (pQueue[i].GetState().GetHashCode() < pQueue[i - 1].GetState().GetHashCode())
+                {
+                    Node t = pQueue[i];
+                    pQueue[i] = pQueue[i - 1];
+                    pQueue[i - 1] = t;
+                }
+            }
+    }
+
+    public async Task<Stack<Node>> UCS_Solver(GameState startState)
     {
         return await Task.Run(() =>
         {
@@ -18,7 +33,7 @@ public class Solver
 
             NodeMap.Clear();
 
-            Node startNode = new Node(startState, null); 
+            Node startNode = new Node(startState, null);
 
             NodeMap.Add(startState.GetStringHashcode(), startNode);
 
@@ -38,34 +53,35 @@ public class Solver
                 Node currentNode = priorityQueue[0];
                 priorityQueue.RemoveAt(0);
 
-                if (GameManager.isFinalState(currentNode.getState()))
+                if (GameManager.isFinalState(currentNode.GetState()))
                 {
                     finalNode = currentNode;
                     break;
                 }
 
-                List<GameState> nextStates = currentNode.getState().GetNextStates(); 
+                List<GameState> nextStates = currentNode.GetState().GetNextStates();
 
                 foreach (var state in nextStates)
                 {
                     if (!NodeMap.ContainsKey(state.GetStringHashcode()))
                     {
                         Node newNode = new Node(state, prevNode);
-                        NodeMap.Add(newNode.getState().GetStringHashcode(), newNode);
-                        priorityQueue.Add(newNode); 
+                        NodeMap.Add(newNode.GetState().GetStringHashcode(), newNode);
+                        addInOrderPosition(ref priorityQueue, newNode);
                     }
-                }          
+                }
             }
-            while(finalNode != null)
+            while (finalNode != null)
             {
                 path.Push(finalNode);
-                finalNode = finalNode.getPrevNode(); 
+                finalNode = finalNode.GetPrevNode();
             }
 
-            Debug.LogWarning("Visited Nodes = " + visitedNodes); 
+            Debug.LogWarning("Visited Nodes = " + visitedNodes);
 
             return path;
-        }); 
+        });
+    }
 }
 public class Node
 {
@@ -80,7 +96,7 @@ public class Node
         if (prevNode != null)
             this.cost += prevNode.cost;
     }
-    public GameState getState() { return state; }
-    public Node getPrevNode() { return prevNode; }
-    public int getCost() { return cost; }
+    public GameState GetState() { return state; }
+    public Node GetPrevNode() { return prevNode; }
+    public int GetCost() { return cost; }
 }
