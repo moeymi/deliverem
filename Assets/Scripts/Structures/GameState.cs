@@ -19,7 +19,15 @@ public class GameState
         m = GameManager.Columns;
         gameGrid = new GameCell[n, m];
     }
-
+    public GameState(GameState state)
+    {
+        this.gameGrid = (GameCell[,]) state.gameGrid.Clone();
+        this.pickedUpCoins = new List<int>(state.pickedUpCoins);
+        zuPosition = new Vector2Int(state.ZuPosition.x, state.ZuPosition.y);
+        lastAction = state.lastAction;
+        n = state.n;
+        m = state.m;
+    }
     public GameState(string directory)
     {
         StreamReader reader = new StreamReader(directory);
@@ -65,17 +73,20 @@ public class GameState
         }
         reader.Close();
     }
+    public List<GameState> GetNextState()
+    {
+        List<GameState> gameStates = new List<GameState>();
+        return gameStates;
+    }
 
     public void SetEmpty(Vector2Int position)
     {
         gameGrid[position.x, position.y] = new GameCell();
     }
-
     public void SetObstacle(Vector2Int position)
     {
         gameGrid[position.x, position.y] = new GameCell(GameCellType.Obstacle);
     }
-
     public void SetCoin(Vector2Int position, int id)
     {
         gameGrid[position.x, position.y] = new GameCell(GameCellType.Coin, id);
@@ -88,7 +99,10 @@ public class GameState
     {
         gameGrid[position.x, position.y].type = GameCellType.FinishedDestination;
     }
-
+    public void SetZuPosition(Vector2Int position)
+    {
+        zuPosition = position;
+    }
     public string GetStringHashcode()
     {
         string str = "";
@@ -114,7 +128,6 @@ public class GameState
 
         return str;
     }
-
     public int Rows
     {
         get { return n; }
