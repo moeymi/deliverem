@@ -11,6 +11,7 @@ public class GameState
     int n, m;
     Vector2Int zuPosition;
     Action lastAction = Action.Move;
+    string hashcode; 
     #endregion
 
     public GameState()
@@ -18,6 +19,7 @@ public class GameState
         n = GameManager.Rows;
         m = GameManager.Columns;
         gameGrid = new GameCell[n, m];
+         
     }
     public GameState(GameState state)
     {
@@ -27,7 +29,35 @@ public class GameState
         lastAction = state.lastAction;
         n = state.n;
         m = state.m;
+        hashcode = generateHashCode();
     }
+
+    string generateHashCode()
+    {
+        string str = "";
+
+        //Cells
+        for (int i = 0; i < n; i++)
+        {
+            for (int j = 0; j < m; j++)
+            {
+                GameCell curCell = gameGrid[i, j];
+                str += curCell.type.ToString()[0];
+                str += curCell.id.ToString();
+            }
+        }
+
+        //PickedUps
+        foreach (int id in pickedUpCoins)
+            str += id.ToString();
+
+        //Position
+        str += zuPosition.x.ToString();
+        str += zuPosition.y.ToString();
+
+        return str;
+    }
+
     public GameState(string directory)
     {
         StreamReader reader = new StreamReader(directory);
@@ -105,28 +135,7 @@ public class GameState
     }
     public string GetStringHashcode()
     {
-        string str = "";
-
-        //Cells
-        for (int i = 0; i < n; i++)
-        {
-            for (int j = 0; j < m; j++)
-            {
-                GameCell curCell = gameGrid[i, j];
-                str += curCell.type.ToString()[0];
-                str += curCell.id.ToString();
-            }
-        }
-
-        //PickedUps
-        foreach (int id in pickedUpCoins)
-            str += id.ToString();
-
-        //Position
-        str += zuPosition.x.ToString();
-        str += zuPosition.y.ToString();
-
-        return str;
+        return hashcode; 
     }
     public int Rows
     {

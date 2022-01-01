@@ -5,7 +5,7 @@ using UnityEngine;
 public class GameManager : MonoBehaviour
 {
     #region Attributes
-
+    Vector2 startPosition; 
     ZuAnimation zuAnimation;
     static int n = 6, m = 5;
     #endregion
@@ -62,6 +62,11 @@ public class GameManager : MonoBehaviour
     static public int Columns
     {
         get { return n; }
+    }
+    static public bool isFinalState(GameState state)
+    {
+
+        return true; 
     }
 
 }
