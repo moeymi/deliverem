@@ -75,6 +75,7 @@ public class GameSolver
             while (finalNode != null)
             {
                 path.Push(finalNode.GetState());
+                Debug.LogError(finalNode.GetState().ZuPosition + " ---- " + finalNode.GetState().LastAction);
                 finalNode = finalNode.GetPrevNode();
             }
             Debug.LogWarning("Visited Nodes = " + visitedNodes);

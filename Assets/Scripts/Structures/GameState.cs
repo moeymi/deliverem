@@ -138,7 +138,6 @@ public class GameState
         if (GameGrid[newPosition.x, newPosition.y].type == GameCellType.Coin)
         {
             GameState newState = new GameState(currentState);
-            
             List<int> newPickedCoins = newState.PickedupCoins;
             newPickedCoins.Add(newState.GameGrid[newPosition.x, newPosition.y].id);
             newState.PickedupCoins = newPickedCoins;

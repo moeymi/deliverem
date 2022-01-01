@@ -53,6 +53,10 @@ public class ZuAnimation : MonoBehaviour
                         Deliver();
                     makingAction = true;
                 }
+                else
+                {
+                    GameManager.MakeNextMove();
+                }
             }
             else
             {
@@ -76,6 +80,7 @@ public class ZuAnimation : MonoBehaviour
                         );
                 makingAction = false;
                 actionTime = 0.52f;
+                GameManager.MakeNextMove();
             }
         }
     }

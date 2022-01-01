@@ -8,6 +8,7 @@ public class GameManager : MonoBehaviour
     #region Attributes
     private static Vector2 startPosition;
     GameState startingState;
+    static bool finishedState = true;
     public static Vector2 StartPosition { get => startPosition; set => startPosition = value; }
     #endregion
     private void Awake()
@@ -21,8 +22,13 @@ public class GameManager : MonoBehaviour
     {
         while (finalPath.Count > 0)
         {
+            if (!finishedState)
+            {
+                await Task.Delay(1000);
+                continue;
+            }
             WorldManager.RunIntoState(finalPath.Pop());
-            await Task.Delay(2000);
+            finishedState = false;
         }
     }
 
@@ -40,5 +46,10 @@ public class GameManager : MonoBehaviour
         Debug.LogWarning("FINISH");
         Debug.LogError("Time = " + (Time.realtimeSinceStartup - stTime));
         RunFinalPath(path);
+    }
+
+    static public void MakeNextMove()
+    {
+        finishedState = true;
     }
 }
