@@ -24,16 +24,12 @@ public class WorldGenerator : MonoBehaviour
         Obstacle = Resources.Load<Tile>("Tiles/Ground/Obstacle");
         Coin = Resources.Load<GameObject>("Prefabs/Coin");
         Placeholder = Resources.Load<GameObject>("Prefabs/Placeholder");
-        Debug.Log(Obstacle);
     }
-
-    public static void Generate(GameState state)
+    public void Generate(GameState state)
     {
         int n = state.Rows;
         int m = state.Columns;
         GameCell[,] grid = state.GameGrid;
-        Debug.Log(n);
-        Debug.Log(m);
         for (int i = 0;i < n; i++)
         {
             for(int j = 0; j < m; j++)
@@ -59,6 +55,7 @@ public class WorldGenerator : MonoBehaviour
                     GameObject coin = Instantiate(Coin);
                     coin.transform.position = new Vector3(j + 0.5f, i + 0.5f);
                     coin.GetComponent<SpriteRenderer>().color = color;
+                    WorldManager.AddObject(new Vector2Int(i, j), coin);
                 }
                 else if(grid[i, j].type == GameCellType.Destination)
                 {
@@ -74,9 +71,10 @@ public class WorldGenerator : MonoBehaviour
                          );
                         idColor.Add(grid[i, j].id, color);
                     }
-                    GameObject coin = Instantiate(Placeholder);
-                    coin.transform.position = new Vector3(j + 0.5f, i + 0.5f);
-                    coin.GetComponent<SpriteRenderer>().color = color;
+                    GameObject placeholder = Instantiate(Placeholder);
+                    placeholder.transform.position = new Vector3(j + 0.5f, i + 0.5f);
+                    placeholder.GetComponent<SpriteRenderer>().color = color;
+                    WorldManager.AddObject(new Vector2Int(i, j), placeholder);
                 }
             }
         }

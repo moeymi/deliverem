@@ -7,13 +7,12 @@ public class GameManager : MonoBehaviour
     #region Attributes
     Vector2 startPosition; 
     ZuAnimation zuAnimation;
-    static int n = 6, m = 5;
     #endregion
     private void Awake()
     {
         zuAnimation = GameObject.FindGameObjectWithTag("Zu").GetComponent<ZuAnimation>();
         GameState newState = new GameState("Assets/Readables/state1.txt");
-        WorldGenerator.Generate(newState);
+        WorldManager.GenerateWorld(newState);
         Debug.Log(newState.GetStringHashcode());
         zuAnimation.transform.position = new Vector2(newState.ZuPosition.y + 0.5f, newState.ZuPosition.x + 0.5f);
     }
@@ -54,18 +53,8 @@ public class GameManager : MonoBehaviour
             zuAnimation.Act(newPos);
         }
     }
-
-    static public int Rows
-    {
-        get { return m; }
-    }
-    static public int Columns
-    {
-        get { return n; }
-    }
     static public bool isFinalState(GameState state)
     {
-
         return true; 
     }
 

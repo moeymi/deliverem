@@ -13,13 +13,6 @@ public class GameState
     Action lastAction = Action.Move;
     string hashcode; 
     #endregion
-
-    public GameState()
-    {
-        n = GameManager.Rows;
-        m = GameManager.Columns;
-        gameGrid = new GameCell[n, m];
-    }
     public GameState(GameState state)
     {
         this.gameGrid = (GameCell[,]) state.gameGrid.Clone();
