@@ -66,7 +66,14 @@ public class ZuAnimation : MonoBehaviour
             string clipName = animator.GetCurrentAnimatorClipInfo(0)[0].clip.name;
             if(actionTime <= 0)
             {
-                Debug.Log("wa2el");
+                if(action == Action.Pickup)
+                    WorldManager.RemoveCoin(
+                        new Vector2Int((int)(destination.x - 0.5f), (int)(destination.y - 0.5f))
+                        );
+                else
+                    WorldManager.Deliver(
+                        new Vector2Int((int)(destination.x - 0.5f), (int)(destination.y - 0.5f))
+                        );
                 makingAction = false;
                 actionTime = 0.52f;
             }
