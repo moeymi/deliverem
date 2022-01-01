@@ -70,8 +70,16 @@ public class GameState
     public List<GameState> GetNextStates()
     {
         List<GameState> gameStates = new List<GameState>();
+
+/*        List<GameState> leftStates = GetNextStateForOneAction(new Vector2(zu))*/
+
         return gameStates;
     }
+/*    List<GameState> GetNextStateForOneAction(Vector2 newPosition)
+    {
+        List<GameState> gameStates = new List<GameState>();
+        return gameStates; 
+    }*/
     public void SetEmpty(Vector2Int position)
     {
         gameGrid[position.x, position.y] = new GameCell();
