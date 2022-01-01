@@ -6,7 +6,7 @@ public class ZuAnimation : MonoBehaviour
     Animator animator;
     bool moving;
     bool makingAction = false;
-    Action action;
+    Action action = Action.Move;
     Vector2 destination;
     float actionTime;
     #endregion

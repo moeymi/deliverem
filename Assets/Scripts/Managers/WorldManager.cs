@@ -36,8 +36,8 @@ public class WorldManager : MonoBehaviour
 
     static public void RunIntoState(GameState state)
     {
-        Debug.Log(state.LastAction);
-        Debug.Log(state.PickedupCoins.Count);
+        //Debug.Log(state.LastAction);
+        //Debug.Log(state.PickedupCoins.Count);
         zuAnimation.Act(new Vector2Int(state.ZuPosition.y, state.ZuPosition.x) , state.LastAction);
     }
 

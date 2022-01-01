@@ -107,12 +107,13 @@ public class GameState
 
         //Update Zu position 
         GameState currentState = new GameState(this);
-        currentState.SetZuPosition(newPosition); 
-        
+        currentState.SetAction( Action.Move);
+        currentState.SetZuPosition(newPosition);
+
         // If Zu on coin's destination that he has 
-        if (GameGrid[newPosition.x , newPosition.y].type == GameCellType.Destination)
+        if (GameGrid[newPosition.x, newPosition.y].type == GameCellType.Destination)
         {
-            for (int i =0; i < pickedUpCoins.Count; i++)
+            for (int i = 0; i < pickedUpCoins.Count; i++)
             {
                 if (pickedUpCoins[i] == GameGrid[newPosition.x, newPosition.y].id)
                 {
@@ -123,7 +124,7 @@ public class GameState
                     newPickedCoins.RemoveAt(i);
                     newState.PickedupCoins = newPickedCoins;
 
-                    newState.SetAction(Action.Deliver); 
+                    newState.SetAction(Action.Deliver);
 
                     gameStates.Add(newState);
 
@@ -131,23 +132,29 @@ public class GameState
             }
         }
 
-        //Just skip the cell situation
-        gameStates.Add(currentState);
-
-        //If the current cell has coin 
-        if (GameGrid[newPosition.x, newPosition.y].type == GameCellType.Coin)
+        else if (GameGrid[newPosition.x, newPosition.y].type == GameCellType.Coin ||
+                GameGrid[newPosition.x, newPosition.y].type == GameCellType.Empty)
         {
-            GameState newState = new GameState(currentState);
-            List<int> newPickedCoins = newState.PickedupCoins;
-            newPickedCoins.Add(newState.GameGrid[newPosition.x, newPosition.y].id);
-            newState.PickedupCoins = newPickedCoins;
+            //Just skip the cell situation
+            gameStates.Add(currentState);
 
-            newState.SetEmpty(newPosition);
+            //If the current cell has coin 
+            if (GameGrid[newPosition.x, newPosition.y].type == GameCellType.Coin)
+            {
+                GameState newState = new GameState(currentState);
+                List<int> newPickedCoins = newState.PickedupCoins;
+                newPickedCoins.Add(newState.GameGrid[newPosition.x, newPosition.y].id);
+                newState.PickedupCoins = newPickedCoins;
 
-            newState.SetAction(Action.Pickup);
+                newState.SetEmpty(newPosition);
 
-            gameStates.Add(newState);
+                newState.SetAction(Action.Pickup);
+
+                gameStates.Add(newState);
+            }
         }
+
+        
 
         return gameStates;
     }

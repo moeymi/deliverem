@@ -27,7 +27,9 @@ public class GameManager : MonoBehaviour
                 await Task.Delay(1000);
                 continue;
             }
-            WorldManager.RunIntoState(finalPath.Pop());
+            GameState nextState = finalPath.Pop();
+            Debug.Log(nextState.GetStringHashcode());
+            WorldManager.RunIntoState(nextState);
             finishedState = false;
         }
     }
