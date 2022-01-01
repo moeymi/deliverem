@@ -16,6 +16,7 @@ public class GameManager : MonoBehaviour
         startingState = new GameState("Assets/Readables/state1.txt");
         StartPosition = startingState.ZuPosition; 
         WorldManager.GenerateWorld(startingState);
+        Debug.Log(startingState.GetNextStates().Count);
     }
     async void RunFinalPath(Stack<GameState> finalPath)
     {
@@ -23,7 +24,7 @@ public class GameManager : MonoBehaviour
         {
             if (!finishedState)
             {
-                await Task.Delay(1000);
+                await Task.Delay(720);
                 continue;
             }
             GameState nextState = finalPath.Pop();/*
@@ -44,9 +45,9 @@ public class GameManager : MonoBehaviour
         GameSolver solver = new GameSolver();
         float stTime = (Time.realtimeSinceStartup);
         Stack<GameState> path = (await solver.UCS_Solver(startingState));
-        Debug.LogWarning(path.Count);
-        Debug.LogWarning("FINISH");
-        Debug.LogError("Time = " + (Time.realtimeSinceStartup - stTime));
+        Debug.Log(path.Count);
+        Debug.Log("FINISH");
+        Debug.Log("Time = " + (Time.realtimeSinceStartup - stTime));
         RunFinalPath(path);
     }
 

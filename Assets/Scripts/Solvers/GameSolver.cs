@@ -41,7 +41,7 @@ public class GameSolver
             Node finalNode = null;
 
 
-            DataStructures.PriorityQueue<Node, int> priorityQueue = new DataStructures.PriorityQueue<Node, int>(0);
+            DataStructures.PriorityQueue<Node, int> priorityQueue = new DataStructures.PriorityQueue<Node, int>(1000);
             priorityQueue.Insert(startNode, startNode.GetCost());
 
             while (priorityQueue.Size() != 0)
@@ -91,6 +91,8 @@ public class Node
     {
         this.state = state;
         this.prevNode = prevNode;
+        if (prevNode != null)
+            cost += prevNode.cost;
         cost += state.PickedupCoins.Count;
     }
     public GameState GetState() { return state; }

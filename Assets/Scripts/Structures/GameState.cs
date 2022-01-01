@@ -36,6 +36,8 @@ public class GameState
 
         n = int.Parse(nums[0]);
         m = int.Parse(nums[1]);
+        Debug.Log(n);
+        Debug.Log(m);
         gameGrid = new GameCell[n, m];
 
         List<string> lines = new List<string>();
@@ -113,7 +115,7 @@ public class GameState
 
         //Update Zu position 
         GameState currentState = new GameState(this);
-        currentState.SetAction( Action.Move);
+        currentState.SetAction(Action.Move);
         currentState.SetZuPosition(newPosition);
 
         // If Zu on coin's destination that he has 
