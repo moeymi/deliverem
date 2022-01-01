@@ -19,7 +19,6 @@ public class GameState
         n = GameManager.Rows;
         m = GameManager.Columns;
         gameGrid = new GameCell[n, m];
-         
     }
     public GameState(GameState state)
     {
@@ -29,35 +28,7 @@ public class GameState
         lastAction = state.lastAction;
         n = state.n;
         m = state.m;
-        hashcode = generateHashCode();
     }
-
-    string generateHashCode()
-    {
-        string str = "";
-
-        //Cells
-        for (int i = 0; i < n; i++)
-        {
-            for (int j = 0; j < m; j++)
-            {
-                GameCell curCell = gameGrid[i, j];
-                str += curCell.type.ToString()[0];
-                str += curCell.id.ToString();
-            }
-        }
-
-        //PickedUps
-        foreach (int id in pickedUpCoins)
-            str += id.ToString();
-
-        //Position
-        str += zuPosition.x.ToString();
-        str += zuPosition.y.ToString();
-
-        return str;
-    }
-
     public GameState(string directory)
     {
         StreamReader reader = new StreamReader(directory);
@@ -108,7 +79,6 @@ public class GameState
         List<GameState> gameStates = new List<GameState>();
         return gameStates;
     }
-
     public void SetEmpty(Vector2Int position)
     {
         gameGrid[position.x, position.y] = new GameCell();
@@ -133,8 +103,35 @@ public class GameState
     {
         zuPosition = position;
     }
+    private string GenerateHashCode()
+    {
+        string str = "";
+
+        //Cells
+        for (int i = 0; i < n; i++)
+        {
+            for (int j = 0; j < m; j++)
+            {
+                GameCell curCell = gameGrid[i, j];
+                str += curCell.type.ToString()[0];
+                str += curCell.id.ToString();
+            }
+        }
+
+        //PickedUps
+        foreach (int id in pickedUpCoins)
+            str += id.ToString();
+
+        //Position
+        str += zuPosition.x.ToString();
+        str += zuPosition.y.ToString();
+
+        return str;
+    }
     public string GetStringHashcode()
     {
+        if (hashcode == null)
+            hashcode = GenerateHashCode();
         return hashcode; 
     }
     public int Rows
@@ -152,5 +149,10 @@ public class GameState
     public Vector2Int ZuPosition
     {
         get { return zuPosition; }
+    }
+    public List<int> PickedupCoins
+    {
+        get { return pickedUpCoins; }
+        set { pickedUpCoins = value; }
     }
 }
