@@ -60,7 +60,7 @@ public class ZuAnimation : MonoBehaviour
             }
             else
             {
-                Vector2 nextPosition = Vector2.MoveTowards(currentPos, destination, Time.deltaTime * 2);
+                Vector2 nextPosition = Vector2.MoveTowards(currentPos, destination, Time.deltaTime * 4);
                 transform.localPosition = nextPosition;
             }
         }

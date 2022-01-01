@@ -15,7 +15,6 @@ public class GameManager : MonoBehaviour
     {
         startingState = new GameState("Assets/Readables/state1.txt");
         StartPosition = startingState.ZuPosition; 
-        Debug.Log(startingState.GetStringHashcode());
         WorldManager.GenerateWorld(startingState);
     }
     async void RunFinalPath(Stack<GameState> finalPath)
@@ -27,8 +26,9 @@ public class GameManager : MonoBehaviour
                 await Task.Delay(1000);
                 continue;
             }
-            GameState nextState = finalPath.Pop();
-            Debug.Log(nextState.GetStringHashcode());
+            GameState nextState = finalPath.Pop();/*
+            Debug.Log(nextState.LastAction);
+            Debug.Log(nextState.GetStringHashcode());*/
             WorldManager.RunIntoState(nextState);
             finishedState = false;
         }

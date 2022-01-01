@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
-
+using DataStructures;
 public class GameSolver
 {
 
@@ -41,17 +41,14 @@ public class GameSolver
             Node finalNode = null;
 
 
-            List<Node> priorityQueue = new List<Node>
-            {
-                startNode
-            };
+            DataStructures.PriorityQueue<Node, int> priorityQueue = new DataStructures.PriorityQueue<Node, int>(0);
+            priorityQueue.Insert(startNode, startNode.GetCost());
 
-            while (priorityQueue.Count != 0)
+            while (priorityQueue.Size() != 0)
             {
                 visitedNodes++;
 
-                Node currentNode = priorityQueue[0];
-                priorityQueue.RemoveAt(0);
+                Node currentNode = priorityQueue.Pop();
 
                 if (currentNode.GetState().isFinalState())
                 {
@@ -68,7 +65,7 @@ public class GameSolver
                     {
                         Node newNode = new Node(state, currentNode);
                         NodeMap.Add(newNode.GetState().GetStringHashcode());
-                        addInOrderPosition(ref priorityQueue, newNode);
+                        priorityQueue.Insert(newNode, newNode.GetCost());
                     }
                 }
             }
@@ -94,8 +91,6 @@ public class Node
     {
         this.state = state;
         this.prevNode = prevNode;
-        if (prevNode != null)
-            this.cost += prevNode.cost;
         cost += state.PickedupCoins.Count;
     }
     public GameState GetState() { return state; }

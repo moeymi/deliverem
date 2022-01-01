@@ -11,16 +11,22 @@ public class GameState
     int n, m;
     Vector2Int zuPosition;
     Action lastAction = Action.Move;
-    string hashcode; 
     #endregion
     public GameState(GameState state)
     {
-        this.gameGrid = (GameCell[,]) state.gameGrid.Clone();
+        n = state.n;
+        m = state.m;
+        this.gameGrid = new GameCell[n,m];
+        for(int i = 0; i < n; i++)
+        {
+            for(int j = 0;j < m; j++)
+            {
+                gameGrid[i, j] = new GameCell(state.GameGrid[i, j]);
+            }
+        }
         this.pickedUpCoins = new List<int>(state.pickedUpCoins);
         zuPosition = new Vector2Int(state.ZuPosition.x, state.ZuPosition.y);
         lastAction = state.lastAction;
-        n = state.n;
-        m = state.m;
     }
     public GameState(string directory)
     {
@@ -113,48 +119,39 @@ public class GameState
         // If Zu on coin's destination that he has 
         if (GameGrid[newPosition.x, newPosition.y].type == GameCellType.Destination)
         {
-            for (int i = 0; i < pickedUpCoins.Count; i++)
+            if(pickedUpCoins.Contains(GameGrid[newPosition.x, newPosition.y].id))
             {
-                if (pickedUpCoins[i] == GameGrid[newPosition.x, newPosition.y].id)
-                {
-                    GameState newState = new GameState(currentState);
-                    newState.SetFinishedDestination(newPosition);
-
-                    List<int> newPickedCoins = newState.PickedupCoins;
-                    newPickedCoins.RemoveAt(i);
-                    newState.PickedupCoins = newPickedCoins;
-
-                    newState.SetAction(Action.Deliver);
-
-                    gameStates.Add(newState);
-
-                }
-            }
-        }
-
-        else if (GameGrid[newPosition.x, newPosition.y].type == GameCellType.Coin ||
-                GameGrid[newPosition.x, newPosition.y].type == GameCellType.Empty)
-        {
-            //Just skip the cell situation
-            gameStates.Add(currentState);
-
-            //If the current cell has coin 
-            if (GameGrid[newPosition.x, newPosition.y].type == GameCellType.Coin)
-            {
+                int i = pickedUpCoins.IndexOf(GameGrid[newPosition.x, newPosition.y].id);
                 GameState newState = new GameState(currentState);
+                newState.SetFinishedDestination(newPosition);
+
                 List<int> newPickedCoins = newState.PickedupCoins;
-                newPickedCoins.Add(newState.GameGrid[newPosition.x, newPosition.y].id);
+                newPickedCoins.RemoveAt(i);
                 newState.PickedupCoins = newPickedCoins;
 
-                newState.SetEmpty(newPosition);
-
-                newState.SetAction(Action.Pickup);
-
+                newState.SetAction(Action.Deliver);
                 gameStates.Add(newState);
+                return gameStates;
             }
         }
+        //Just skip the cell situation
+        gameStates.Add(currentState);
+        //If the current cell has coin 
+        if (GameGrid[newPosition.x, newPosition.y].type == GameCellType.Coin)
+        {
+            GameState newState = new GameState(currentState);
+            List<int> newPickedCoins = newState.PickedupCoins;
+            newPickedCoins.Add(newState.GameGrid[newPosition.x, newPosition.y].id);
+            newState.PickedupCoins = newPickedCoins;
 
-        
+            newState.SetEmpty(newPosition);
+
+            newState.SetAction(Action.Pickup);
+
+            gameStates.Add(newState);
+        }
+
+
 
         return gameStates;
     }
@@ -194,7 +191,8 @@ public class GameState
     {
         this.lastAction = action;
     }
-    private string GenerateHashCode()
+
+    public string GetStringHashcode()
     {
         string str = "";
 
@@ -209,21 +207,16 @@ public class GameState
             }
         }
 
+        str += "|";
         //PickedUps
         foreach (int id in pickedUpCoins)
             str += id.ToString();
-
+        str += "|";
         //Position
         str += zuPosition.x.ToString();
         str += zuPosition.y.ToString();
 
         return str;
-    }
-    public string GetStringHashcode()
-    {
-        if (hashcode == null)
-            hashcode = GenerateHashCode();
-        return hashcode; 
     }
     public int Rows
     {
