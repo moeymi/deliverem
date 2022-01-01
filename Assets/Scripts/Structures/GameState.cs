@@ -71,15 +71,95 @@ public class GameState
     {
         List<GameState> gameStates = new List<GameState>();
 
-/*        List<GameState> leftStates = GetNextStateForOneAction(new Vector2(zu))*/
+        List<GameState> leftStates = GetNextStateForOneAction(new Vector2Int(zuPosition.x - 1, zuPosition.y));
+        List<GameState> rightStates = GetNextStateForOneAction(new Vector2Int(zuPosition.x + 1, zuPosition.y));
+        List<GameState> topStates = GetNextStateForOneAction(new Vector2Int(zuPosition.x, zuPosition.y +1));
+        List<GameState> bottomStates = GetNextStateForOneAction(new Vector2Int(zuPosition.x, zuPosition.y - 1));
+
+        if (leftStates != null&& leftStates.Count != 0 )
+        {
+            gameStates.AddRange(leftStates);
+        }
+
+        if (rightStates != null && rightStates.Count != 0)
+        {
+            gameStates.AddRange(rightStates);
+        }
+
+        if (topStates != null && topStates.Count != 0)
+        {
+            gameStates.AddRange(topStates);
+        }
+
+        if (bottomStates != null && bottomStates.Count != 0)
+        {
+            gameStates.AddRange(bottomStates);
+        }
 
         return gameStates;
     }
-/*    List<GameState> GetNextStateForOneAction(Vector2 newPosition)
+    List<GameState> GetNextStateForOneAction(Vector2Int newPosition)
     {
+        if (!checkValidPosition(newPosition))
+            return null; 
+
         List<GameState> gameStates = new List<GameState>();
-        return gameStates; 
-    }*/
+
+        //Update Zu position 
+        GameState currentState = new GameState(this);
+        currentState.SetZuPosition(newPosition); 
+        
+        // If Zu on coin's destination that he has 
+        if (GameGrid[newPosition.x , newPosition.y].type == GameCellType.Destination)
+        {
+            for (int i =0; i < pickedUpCoins.Count; i++)
+            {
+                if (pickedUpCoins[i] == GameGrid[newPosition.x, newPosition.y].id)
+                {
+                    GameState newState = new GameState(currentState);
+                    newState.SetFinishedDestination(newPosition);
+
+                    List<int> newPickedCoins = newState.PickedupCoins;
+                    newPickedCoins.RemoveAt(i);
+                    newState.PickedupCoins = newPickedCoins;
+
+                    newState.SetAction(Action.Pickup); 
+
+                    gameStates.Add(newState);
+
+                }
+            }
+        }
+
+        //Just skip the cell situation
+        gameStates.Add(currentState);
+
+        //If the current cell has coin 
+        if (GameGrid[newPosition.x, newPosition.y].type == GameCellType.Coin)
+        {
+            GameState newState = new GameState(currentState);
+            
+            List<int> newPickedCoins = newState.PickedupCoins;
+            newPickedCoins.Add(newState.GameGrid[newPosition.x, newPosition.y].id);
+            newState.PickedupCoins = newPickedCoins;
+
+            newState.SetEmpty(newPosition);
+
+            newState.SetAction(Action.Deliver);
+
+            gameStates.Add(newState);
+        }
+
+        return gameStates;
+    }
+
+    bool checkValidPosition(Vector2Int position)
+    {
+        if (position.x < n && position.x >= 0 && position.y < m && position.y >= 0 &&
+            GameGrid[position.x, position.y].type != GameCellType.Obstacle)
+            return true;
+        return false;
+    }
     public void SetEmpty(Vector2Int position)
     {
         gameGrid[position.x, position.y] = new GameCell();
@@ -103,6 +183,10 @@ public class GameState
     public void SetZuPosition(Vector2Int position)
     {
         zuPosition = position;
+    }
+    public void SetAction(Action action)
+    {
+        this.lastAction = action;
     }
     private string GenerateHashCode()
     {
@@ -156,4 +240,22 @@ public class GameState
         get { return pickedUpCoins; }
         set { pickedUpCoins = value; }
     }
+    public bool isFinalState()
+    {
+        if (zuPosition != GameManager.StartPosition)
+            return false;
+
+        for (int i = 0; i < n; i++)
+        {
+            for (int j = 0; j < m; j++)
+            {
+                if (gameGrid[i, j].type == GameCellType.Coin || gameGrid[i, j].type == GameCellType.Destination)
+                    return false;
+            }
+        }
+
+        return true;
+    }
+
+
 }

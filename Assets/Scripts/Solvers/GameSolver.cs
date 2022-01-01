@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
 
-public class Solver
+public class GameSolver
 {
     Dictionary<string, Node> NodeMap = new Dictionary<string, Node>();
 
@@ -53,19 +53,20 @@ public class Solver
                 Node currentNode = priorityQueue[0];
                 priorityQueue.RemoveAt(0);
 
-                if (GameManager.isFinalState(currentNode.GetState()))
+                if (currentNode.GetState().isFinalState())
                 {
                     finalNode = currentNode;
                     break;
                 }
 
                 List<GameState> nextStates = currentNode.GetState().GetNextStates();
+                
 
                 foreach (var state in nextStates)
                 {
                     if (!NodeMap.ContainsKey(state.GetStringHashcode()))
                     {
-                        Node newNode = new Node(state, prevNode);
+                        Node newNode = new Node(state, currentNode);
                         NodeMap.Add(newNode.GetState().GetStringHashcode(), newNode);
                         addInOrderPosition(ref priorityQueue, newNode);
                     }
@@ -76,7 +77,6 @@ public class Solver
                 path.Push(finalNode);
                 finalNode = finalNode.GetPrevNode();
             }
-
             Debug.LogWarning("Visited Nodes = " + visitedNodes);
 
             return path;
@@ -100,3 +100,4 @@ public class Node
     public Node GetPrevNode() { return prevNode; }
     public int GetCost() { return cost; }
 }
+

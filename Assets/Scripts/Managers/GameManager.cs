@@ -5,33 +5,23 @@ using UnityEngine;
 public class GameManager : MonoBehaviour
 {
     #region Attributes
-    static Vector2 startPosition; 
+    private static Vector2 startPosition;
+    public static Vector2 StartPosition { get => startPosition; set => startPosition = value; }
     #endregion
-    private void Awake()
+    async private void Awake()
     {
         GameState startingState = new GameState("Assets/Readables/state1.txt");
+        StartPosition = startingState.ZuPosition; 
         Debug.Log(startingState.GetStringHashcode());
         WorldManager.GenerateWorld(startingState);
+        GameSolver solver = new GameSolver();
+        float stTime = (Time.realtimeSinceStartup);
+        Debug.LogWarning((await solver.UCS_Solver(startingState)).Count);
+        Debug.LogWarning("FINISH");
+        Debug.LogError("Time = " + (Time.realtimeSinceStartup - stTime));
     }
     void RunFinalPath(Stack<GameState> finalPath)
     {
 
     }
-    static public bool isFinalState(GameState state)
-    {
-        if (state.ZuPosition != GameManager.startPosition)
-            return false;
-        
-        for (int i =0; i < state.Rows; i++)
-        {
-            for (int j =0; j<state.Columns; j++)
-            {
-                if (state.GameGrid[i, j].type == GameCellType.Coin || state.GameGrid[i, j].type == GameCellType.Destination)
-                    return false; 
-            }
-        }
-
-        return true; 
-    }
-
 }
