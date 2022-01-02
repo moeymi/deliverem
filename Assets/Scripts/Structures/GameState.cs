@@ -307,6 +307,19 @@ public class GameState
             int total_distance = distance_x + distance_y;
             allCosts.Add(total_distance);
         }
+
+        //Check the picked up coins 
+        for (int i = 0; i < pickedUpCoins.Count; i++)
+        {
+            int coin_Id = pickedUpCoins[i];
+            int distance_x = Mathf.Abs(remainingDestinations[coin_Id].x - zuPosition.x);
+            int distance_y = Mathf.Abs(remainingDestinations[coin_Id].y - zuPosition.y);
+            int total_distance = distance_x + distance_y;
+            allCosts.Add(total_distance);
+            if (isRandom)
+                return allCosts;
+
+        }
         return allCosts;
     }
     public int Heuristic_2()
