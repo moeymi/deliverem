@@ -262,5 +262,78 @@ public class GameState
         return true;
     }
 
+    public int  Heuristic_1()
+    {
+        int x_diff = (int)Mathf.Abs(GameManager.StartPosition.x - zuPosition.x);
+        int y_diff = (int)Mathf.Abs(GameManager.StartPosition.y - zuPosition.y);
+
+        return x_diff + y_diff;
+    }
+    public List<int> GetAllCoinsCost(bool isRandom)
+    {
+        Dictionary<int, Vector2> remainingCoins = new Dictionary<int, Vector2>();
+        Dictionary<int, Vector2> remainingDestinations = new Dictionary<int, Vector2>();
+        List<int> allCosts = new List<int>();
+
+        for (int i = 0; i < n; i++)
+        {
+            for (int j = 0; j < m; j++)
+            {
+                if (gameGrid[i, j].type == GameCellType.Coin)
+                {
+                    remainingCoins[gameGrid[i, j].id] = new Vector2(i, j);
+                }
+                else if (gameGrid[i, j].type == GameCellType.Destination)
+                {
+                    remainingDestinations[gameGrid[i, j].id] = new Vector2(i, j);
+                }
+            }
+        }
+        //Check the reamining Coins 
+        foreach (var element in remainingCoins)
+        {
+            int coin_Id = element.Key;
+            int distance_x = (int)Mathf.Abs(remainingDestinations[coin_Id].x - element.Value.x);
+            int distance_y = (int)Mathf.Abs(remainingDestinations[coin_Id].y - element.Value.y);
+            int total_distance = distance_x + distance_y;
+            allCosts.Add(total_distance);
+            if (isRandom)
+                return allCosts;
+        }
+
+        //Check the picked up coins 
+        for (int i = 0; i < pickedUpCoins.Count; i++)
+        {
+            int coin_Id = pickedUpCoins[i];
+            int distance_x = (int)Mathf.Abs(remainingDestinations[coin_Id].x - zuPosition.x);
+            int distance_y = (int)Mathf.Abs(remainingDestinations[coin_Id].y - zuPosition.y);
+            int total_distance = distance_x + distance_y;
+            allCosts.Add(total_distance);
+            if (isRandom)
+                return allCosts;
+            
+        }
+        
+
+        return allCosts;
+    }
+    public int Heuristic_2()
+    {
+        List<int> allCosts = GetAllCoinsCost(false);
+        int max = 0;
+        for (int i = 0; i < allCosts.Count; i++)
+            max = Mathf.Max(max, allCosts[i]);
+
+        return max;
+    }
+    public int Heuristic_3()
+    {
+        List<int> allCosts = GetAllCoinsCost(true);
+        if (allCosts.Count > 0)
+            return allCosts[0];
+        //if all coins are deliverd 
+        else
+            return 0;
+    }
 
 }

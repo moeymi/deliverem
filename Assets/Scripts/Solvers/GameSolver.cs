@@ -63,9 +63,10 @@ public class GameSolver
                 {
                     if (!NodeMap.Contains(state.GetStringHashcode()))
                     {
+                        //Debug.Log(state.Heuristic_2());
                         Node newNode = new Node(state, currentNode);
                         NodeMap.Add(newNode.GetState().GetStringHashcode());
-                        priorityQueue.Insert(newNode, newNode.GetCost());
+                        priorityQueue.Insert(newNode, newNode.GetCost()+state.Heuristic_1());
                     }
                 }
             }
