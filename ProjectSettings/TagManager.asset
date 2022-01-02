@@ -6,6 +6,10 @@ TagManager:
   tags:
   - Zu
   - Grid
+  - HeuDropdown
+  - TimeText
+  - PickedupCoins
+  - Collector
   layers:
   - Default
   - TransparentFX

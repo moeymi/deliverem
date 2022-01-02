@@ -6,8 +6,8 @@ using UnityEngine;
 public class GameManager : MonoBehaviour
 {
     #region Attributes
-    private static Vector2 startPosition;
-    GameState startingState;
+    static Vector2 startPosition;
+    static GameState startingState;
     static bool finishedState = true;
     public static Vector2 StartPosition { get => startPosition; set => startPosition = value; }
     #endregion
@@ -16,9 +16,8 @@ public class GameManager : MonoBehaviour
         startingState = new GameState("Assets/Readables/state1.txt");
         StartPosition = startingState.ZuPosition; 
         WorldManager.GenerateWorld(startingState);
-        Debug.Log(startingState.GetNextStates().Count);
     }
-    async void RunFinalPath(Stack<GameState> finalPath)
+    static async void RunFinalPath(Stack<GameState> finalPath)
     {
         while (finalPath.Count > 0)
         {
@@ -34,20 +33,12 @@ public class GameManager : MonoBehaviour
             finishedState = false;
         }
     }
-
-    private void Start()
-    {
-        Solve();
-    }
-
-    async void Solve()
+    static public async void Solve()
     {
         GameSolver solver = new GameSolver();
         float stTime = (Time.realtimeSinceStartup);
-        Stack<GameState> path = (await solver.UCS_Solver(startingState));
-        Debug.Log(path.Count);
-        Debug.Log("FINISH");
-        Debug.Log("Time = " + (Time.realtimeSinceStartup - stTime));
+        Stack<GameState> path = (await solver.Solve(startingState));
+        Debug.Log("Finished with : " + path.Count + " moves.");
         RunFinalPath(path);
     }
 

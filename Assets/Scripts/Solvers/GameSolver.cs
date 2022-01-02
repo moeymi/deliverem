@@ -1,13 +1,15 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
 using DataStructures;
+using TMPro;
+
 public class GameSolver
 {
-
+    #region Attributes
     HashSet<string> NodeMap = new HashSet<string>();
-
+    static bool isSolving = false;
+    #endregion
     public void addInOrderPosition(ref List<Node> pQueue, Node newNode)
     {
         pQueue.Add(newNode);
@@ -23,7 +25,7 @@ public class GameSolver
             }
     }
 
-    public async Task<Stack<GameState>> UCS_Solver(GameState startState)
+    async Task<Stack<GameState>> RunSolver(GameState startState, int heuristic)
     {
         return await Task.Run(() =>
         {
@@ -41,7 +43,7 @@ public class GameSolver
             Node finalNode = null;
 
 
-            DataStructures.PriorityQueue<Node, int> priorityQueue = new DataStructures.PriorityQueue<Node, int>(1000);
+            PriorityQueue<Node, int> priorityQueue = new PriorityQueue<Node, int>(1000);
             priorityQueue.Insert(startNode, startNode.GetCost());
 
             while (priorityQueue.Size() != 0)
@@ -66,7 +68,14 @@ public class GameSolver
                         //Debug.Log(state.Heuristic_2());
                         Node newNode = new Node(state, currentNode);
                         NodeMap.Add(newNode.GetState().GetStringHashcode());
-                        priorityQueue.Insert(newNode, newNode.GetCost()+state.Heuristic_1());
+                        if(heuristic == 1)
+                            priorityQueue.Insert(newNode, newNode.GetCost() + state.Heuristic_1());
+                        else if (heuristic == 2)
+                            priorityQueue.Insert(newNode, newNode.GetCost() + state.Heuristic_2());
+                        else if (heuristic == 3)
+                            priorityQueue.Insert(newNode, newNode.GetCost() + state.Heuristic_3());
+                        else
+                            priorityQueue.Insert(newNode, newNode.GetCost());
                     }
                 }
             }
@@ -76,10 +85,24 @@ public class GameSolver
                 //Debug.LogError(finalNode.GetState().ZuPosition + " ---- " + finalNode.GetState().LastAction);
                 finalNode = finalNode.GetPrevNode();
             }
-            Debug.LogWarning("Visited Nodes = " + visitedNodes);
+            Debug.Log("Visited Nodes = " + visitedNodes);
 
             return path;
         });
+    }
+
+    public async Task<Stack<GameState>> Solve(GameState startGamestate)
+    {
+        int heuristic = UIManager.DropdownValue;
+        isSolving = true;
+        Stack<GameState> finalPath = (await RunSolver(startGamestate, heuristic));
+        isSolving = false;
+        return finalPath;
+    }
+
+    static public bool IsSolving
+    {
+        get { return isSolving; }
     }
 }
 public class Node

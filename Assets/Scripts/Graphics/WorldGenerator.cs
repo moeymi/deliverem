@@ -10,6 +10,7 @@ public class WorldGenerator : MonoBehaviour
     static Tile Normal, Obstacle, LeftCorner, RightCorner, LeftEdge, RightEdge, TopEdge;
     static GameObject Coin, Placeholder;
     static Dictionary<int, Color> idColor = new Dictionary<int, Color>();
+    static Transform collector;
     #endregion
 
     private void Awake()
@@ -23,6 +24,8 @@ public class WorldGenerator : MonoBehaviour
         TopEdge = Resources.Load<Tile>("Tiles/Ground/TopEdge");
         Obstacle = Resources.Load<Tile>("Tiles/Ground/Obstacle");
         Coin = Resources.Load<GameObject>("Prefabs/Coin");
+
+        collector = GameObject.FindGameObjectWithTag("Collector").transform;
         Placeholder = Resources.Load<GameObject>("Prefabs/Placeholder");
     }
     public void Generate(GameState state)
@@ -45,15 +48,13 @@ public class WorldGenerator : MonoBehaviour
                         color = idColor[grid[i, j].id];
                     else
                     {
-                        color = new Color(
-                         (float)Random.Range(0.35f, 1f),
-                         (float)Random.Range(0.35f, 1f),
-                         (float)Random.Range(0.35f, 1f)
-                         );
+                        color = Random.ColorHSV(idColor.Keys.Count * 0.15f, idColor.Keys.Count * 0.18f, 0.85f, 0.85f, 1, 1);
                         idColor.Add(grid[i, j].id, color);
                     }
                     GameObject coin = Instantiate(Coin);
                     coin.transform.position = new Vector3(j + 0.5f, i + 0.5f);
+                    coin.name = color.ToString();
+                    coin.transform.SetParent(collector);
                     coin.GetComponent<SpriteRenderer>().color = color;
                     WorldManager.AddObject(new Vector2Int(j, i), coin);
                 }
@@ -64,15 +65,13 @@ public class WorldGenerator : MonoBehaviour
                         color = idColor[grid[i, j].id];
                     else
                     {
-                        color = new Color(
-                         (float)Random.Range(0.35f, 1f),
-                         (float)Random.Range(0.35f, 1f),
-                         (float)Random.Range(0.35f, 1f)
-                         );
+                        color = Random.ColorHSV(idColor.Keys.Count * 0.15f, idColor.Keys.Count * 0.18f, 0.85f, 0.85f, 1, 1);
                         idColor.Add(grid[i, j].id, color);
                     }
                     GameObject placeholder = Instantiate(Placeholder);
                     placeholder.transform.position = new Vector3(j + 0.5f, i + 0.5f);
+                    placeholder.name = color.ToString();
+                    placeholder.transform.SetParent(collector);
                     placeholder.GetComponent<SpriteRenderer>().color = color;
                     WorldManager.AddObject(new Vector2Int(j, i), placeholder);
                 }

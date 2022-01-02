@@ -36,8 +36,6 @@ public class GameState
 
         n = int.Parse(nums[0]);
         m = int.Parse(nums[1]);
-        Debug.Log(n);
-        Debug.Log(m);
         gameGrid = new GameCell[n, m];
 
         List<string> lines = new List<string>();
@@ -271,8 +269,8 @@ public class GameState
     }
     public List<int> GetAllCoinsCost(bool isRandom)
     {
-        Dictionary<int, Vector2> remainingCoins = new Dictionary<int, Vector2>();
-        Dictionary<int, Vector2> remainingDestinations = new Dictionary<int, Vector2>();
+        Dictionary<int, Vector2Int> remainingCoins = new Dictionary<int, Vector2Int>();
+        Dictionary<int, Vector2Int> remainingDestinations = new Dictionary<int, Vector2Int>();
         List<int> allCosts = new List<int>();
 
         for (int i = 0; i < n; i++)
@@ -281,52 +279,37 @@ public class GameState
             {
                 if (gameGrid[i, j].type == GameCellType.Coin)
                 {
-                    remainingCoins[gameGrid[i, j].id] = new Vector2(i, j);
+                    remainingCoins[gameGrid[i, j].id] = new Vector2Int(i, j);
                 }
                 else if (gameGrid[i, j].type == GameCellType.Destination)
                 {
-                    remainingDestinations[gameGrid[i, j].id] = new Vector2(i, j);
+                    remainingDestinations[gameGrid[i, j].id] = new Vector2Int(i, j);
+                }
+                if (isRandom)
+                {
+                    int id = gameGrid[i, j].id;
+                    if (remainingDestinations.ContainsKey(gameGrid[i, j].id) 
+                        && remainingCoins.ContainsKey(gameGrid[i, j].id))
+                    {
+                        int distance_x = (int)Mathf.Abs(remainingDestinations[id].x - remainingCoins[id].x);
+                        int distance_y = (int)Mathf.Abs(remainingDestinations[id].x - remainingCoins[id].y);
+                        int total_distance = distance_x + distance_y;
+                        allCosts.Add(total_distance);
+                    }
                 }
             }
         }
-        //Check the reamining Coins 
-        foreach (var element in remainingCoins)
+        //Calculate all distancess
+        foreach (var id in remainingCoins.Keys)
         {
-            int coin_Id = element.Key;
-            int distance_x = (int)Mathf.Abs(remainingDestinations[coin_Id].x - element.Value.x);
-            int distance_y = (int)Mathf.Abs(remainingDestinations[coin_Id].y - element.Value.y);
+            int distance_x = Mathf.Abs(remainingDestinations[id].x - remainingCoins[id].x);
+            int distance_y = Mathf.Abs(remainingDestinations[id].x - remainingCoins[id].y);
             int total_distance = distance_x + distance_y;
             allCosts.Add(total_distance);
-            if (isRandom)
-                return allCosts;
         }
-
-        //Check the picked up coins 
-        for (int i = 0; i < pickedUpCoins.Count; i++)
-        {
-            int coin_Id = pickedUpCoins[i];
-            int distance_x = (int)Mathf.Abs(remainingDestinations[coin_Id].x - zuPosition.x);
-            int distance_y = (int)Mathf.Abs(remainingDestinations[coin_Id].y - zuPosition.y);
-            int total_distance = distance_x + distance_y;
-            allCosts.Add(total_distance);
-            if (isRandom)
-                return allCosts;
-            
-        }
-        
-
         return allCosts;
     }
     public int Heuristic_2()
-    {
-        List<int> allCosts = GetAllCoinsCost(false);
-        int max = 0;
-        for (int i = 0; i < allCosts.Count; i++)
-            max = Mathf.Max(max, allCosts[i]);
-
-        return max;
-    }
-    public int Heuristic_3()
     {
         List<int> allCosts = GetAllCoinsCost(true);
         if (allCosts.Count > 0)
@@ -334,6 +317,15 @@ public class GameState
         //if all coins are deliverd 
         else
             return 0;
+    }
+    public int Heuristic_3()
+    {
+        List<int> allCosts = GetAllCoinsCost(false);
+        int max = 0;
+        for (int i = 0; i < allCosts.Count; i++)
+            max = Mathf.Max(max, allCosts[i]);
+
+        return max;
     }
 
 }

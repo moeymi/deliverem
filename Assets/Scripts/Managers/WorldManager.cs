@@ -28,10 +28,12 @@ public class WorldManager : MonoBehaviour
     static public void RemoveCoin(Vector2Int position)
     {
         Destroy(gameObjects[position]);
+        UIManager.PickupCoin(gameObjects[position]);
     }
     static public void Deliver(Vector2Int position)
     {
         gameObjects[position].GetComponent<Placeholder>().Close();
+        UIManager.DeliverCoin(gameObjects[position]);
     }
 
     static public void RunIntoState(GameState state)
