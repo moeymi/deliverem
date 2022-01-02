@@ -96,7 +96,6 @@ public class WorldGenerator : MonoBehaviour
             tileMap.SetTile(new Vector3Int(j, n, 1), TopEdge);
         }
         Camera.main.transform.position = new Vector3(m / 2f, n / 2f, -10);
-        Camera.main.GetComponent<PixelPerfectCamera>().refResolutionX = (m+1) * 32;
-        Camera.main.GetComponent<PixelPerfectCamera>().refResolutionY = (n+1) * 32;
+        Camera.main.GetComponent<Camera>().orthographicSize = (n+1)/2 + 0.5f;
     }
 }
