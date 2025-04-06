@@ -7,16 +7,21 @@ public class GameManager : MonoBehaviour
 {
     #region Attributes
     static Vector2 startPosition;
-    static GameState startingState;
     static bool finishedState = true;
     public static Vector2 StartPosition { get => startPosition; set => startPosition = value; }
+    public static GameState StartingState { get; private set; }
     #endregion
     private void Awake()
     {
-        startingState = new GameState("Assets/Readables/state1.txt");
-        StartPosition = startingState.ZuPosition; 
-        WorldManager.GenerateWorld(startingState);
+        DontDestroyOnLoad(gameObject);
     }
+    
+    public static void CreateFromText(string text)
+    {
+        StartingState = new GameState(text);
+        StartPosition = StartingState.ZuPosition; 
+    }
+    
     static async void RunFinalPath(Stack<GameState> finalPath)
     {
         while (finalPath.Count > 0)
@@ -37,7 +42,7 @@ public class GameManager : MonoBehaviour
     {
         GameSolver solver = new GameSolver();
         float stTime = (Time.realtimeSinceStartup);
-        Stack<GameState> path = (await solver.Solve(startingState));
+        Stack<GameState> path = (await solver.Solve(StartingState));
         Debug.Log("Finished with : " + path.Count + " moves.");
         RunFinalPath(path);
     }

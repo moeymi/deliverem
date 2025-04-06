@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -9,6 +10,11 @@ public class WorldManager : MonoBehaviour
     static Dictionary<Vector2Int, GameObject> gameObjects = new Dictionary<Vector2Int, GameObject>();
     static ZuAnimation zuAnimation;
     #endregion
+
+    private void Awake()
+    {
+        GenerateWorld(GameManager.StartingState);
+    }
 
     static public void GenerateWorld(GameState state)
     {
@@ -28,18 +34,17 @@ public class WorldManager : MonoBehaviour
     static public void RemoveCoin(Vector2Int position)
     {
         Destroy(gameObjects[position]);
-        UIManager.PickupCoin(gameObjects[position]);
+        UIManager.PickedUpCoinEvent.Invoke(gameObjects[position].GetComponent<SpriteRenderer>().color);
     }
+    
     static public void Deliver(Vector2Int position)
     {
         gameObjects[position].GetComponent<Placeholder>().Close();
-        UIManager.DeliverCoin(gameObjects[position]);
+        UIManager.DeliverCoinEvent.Invoke(gameObjects[position].GetComponent<SpriteRenderer>().color);
     }
 
     static public void RunIntoState(GameState state)
     {
-        //Debug.Log(state.LastAction);
-        //Debug.Log(state.PickedupCoins.Count);
         zuAnimation.Act(new Vector2Int(state.ZuPosition.y, state.ZuPosition.x) , state.LastAction);
     }
 

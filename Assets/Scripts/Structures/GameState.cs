@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Text.RegularExpressions;
 using UnityEngine;
 
 public class GameState
@@ -28,51 +29,56 @@ public class GameState
         zuPosition = new Vector2Int(state.ZuPosition.x, state.ZuPosition.y);
         lastAction = state.lastAction;
     }
-    public GameState(string directory)
+
+    public GameState(string fileContent)
     {
-        StreamReader reader = new StreamReader(directory);
-        string line = reader.ReadLine(); ;
-        string[] nums = line.Split('\t');
-
-        n = int.Parse(nums[0]);
-        m = int.Parse(nums[1]);
-        gameGrid = new GameCell[n, m];
-
-        List<string> lines = new List<string>();
-        for (int i = 0; i < n; i++)
+        using (StringReader reader = new StringReader(fileContent))
         {
-            lines.Add(reader.ReadLine());
-        }
-        lines.Reverse();
-        for (int i = 0; i < n; i++)
-        {
-            line = lines[i];
-            string[] cells = line.Split('\t');
-            for (int j = 0; j < m; j++)
+            // Use Regex.Split to split on any whitespace (tabs, spaces, etc.)
+            string line = reader.ReadLine();
+            string[] nums = Regex.Split(line.Trim(), @"\s+");
+
+            n = int.Parse(nums[0]);
+            m = int.Parse(nums[1]);
+            gameGrid = new GameCell[n, m];
+
+            List<string> lines = new List<string>();
+            for (int i = 0; i < n; i++)
             {
-                if (cells[j] == "#")
-                    SetObstacle(new Vector2Int(i, j));
-                else if (cells[j][0] == 'P')
+                lines.Add(reader.ReadLine());
+            }
+            lines.Reverse();
+            for (int i = 0; i < n; i++)
+            {
+                line = lines[i];
+                // Again use Regex.Split for flexible splitting
+                string[] cells = Regex.Split(line.Trim(), @"\s+");
+                for (int j = 0; j < m; j++)
                 {
-                    int id = int.Parse(cells[j].Substring(1));
-                    SetCoin(new Vector2Int(i, j), id);
+                    if (cells[j] == "#")
+                        SetObstacle(new Vector2Int(i, j));
+                    else if (cells[j][0] == 'P')
+                    {
+                        int id = int.Parse(cells[j].Substring(1));
+                        SetCoin(new Vector2Int(i, j), id);
+                    }
+                    else if (cells[j][0] == 'D')
+                    {
+                        int id = int.Parse(cells[j].Substring(1));
+                        SetDestination(new Vector2Int(i, j), id);
+                    }
+                    else if (cells[j] == "T")
+                    {
+                        zuPosition = new Vector2Int(i, j);
+                        SetEmpty(new Vector2Int(i, j));
+                    }
+                    else
+                        SetEmpty(new Vector2Int(i, j));
                 }
-                else if (cells[j][0] == 'D')
-                {
-                    int id = int.Parse(cells[j].Substring(1));
-                    SetDestination(new Vector2Int(i, j), id);
-                }
-                else if (cells[j] == "T")
-                {
-                    zuPosition = new Vector2Int(i, j);
-                    SetEmpty(new Vector2Int(i, j));
-                }
-                else
-                    SetEmpty(new Vector2Int(i, j));
             }
         }
-        reader.Close();
     }
+
     public List<GameState> GetNextStates()
     {
         List<GameState> gameStates = new List<GameState>();

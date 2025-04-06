@@ -1,37 +1,47 @@
-﻿using TMPro;
+﻿using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour
 {
-    #region Attributes
-    static TextMeshProUGUI timeText;
-    static TMP_Dropdown dropDown;
-    static float timeElapsed = 0;
-    static GameObject UICoin;
-    static Transform PickedupCoins;
-    #endregion
-    // Start is called before the first frame update
+    [SerializeField] private GameObject m_SolverGroup;
+    [SerializeField] private TextMeshProUGUI m_TimeText;
+    [SerializeField] TMP_Dropdown m_DropDown;
+    [SerializeField] GameObject m_UICoin;
+    [SerializeField] Transform m_PickedUpCoins;
+    
+    private static int m_Heuristic = 0;
+    
+    private Dictionary<Color, GameObject> m_CoinMap = new Dictionary<Color, GameObject>();
+    float m_TimeElapsed = 0;
+    
+    public static UnityEvent<Color> PickedUpCoinEvent = new();
+    public static UnityEvent<Color> DeliverCoinEvent = new();
+    
     void Awake()
     {
-        timeText = GameObject.FindGameObjectWithTag("TimeText").GetComponent<TextMeshProUGUI>();
-        dropDown = GameObject.FindGameObjectWithTag("HeuDropdown").GetComponent<TMP_Dropdown>();
-        PickedupCoins = GameObject.FindGameObjectWithTag("PickedupCoins").transform;
-        UICoin = Resources.Load<GameObject>("Prefabs/UICoin");
+        m_DropDown.onValueChanged.AddListener(delegate
+        {
+            m_Heuristic = m_DropDown.value;
+        });
+        
+        PickedUpCoinEvent.AddListener(PickupCoin);
     }
 
-    // Update is called once per frame
     void Update()
     {
         if (!GameSolver.IsSolving)
         {
-            if(timeElapsed != 0)
-                timeText.color = Color.green;
-            timeElapsed = 0;
+            if(m_TimeElapsed != 0)
+                m_TimeText.color = Color.green;
+            m_TimeElapsed = 0;
             return;
         }
-        timeElapsed += Time.deltaTime;
-        timeText.text = string.Format("{0:0.00}", timeElapsed);
+        
+        m_TimeElapsed += Time.deltaTime;
+        m_TimeText.text = string.Format("{0:0.00}", m_TimeElapsed);
     }
 
     public void PauseUnpause()
@@ -46,26 +56,23 @@ public class UIManager : MonoBehaviour
 
     public void StartSolver()
     {
-        timeText.color = Color.yellow;
+        m_TimeText.color = Color.yellow;
         GameManager.Solve();
+        m_SolverGroup.SetActive(false);
     }
 
-    static public int DropdownValue
-    {
-        get { return dropDown.value; }
-    }
+    static public int HeuristicValue => m_Heuristic; 
 
-    static public void PickupCoin(GameObject obj)
+    private void PickupCoin(Color color)
     {
-        Color color = obj.GetComponent<SpriteRenderer>().color;
-        GameObject coin = Instantiate(UICoin);
+        GameObject coin = Instantiate(m_UICoin, m_PickedUpCoins);
         coin.GetComponent<Image>().color = color;
-        coin.name = obj.name;
-        coin.transform.SetParent(PickedupCoins);
+        m_CoinMap.Add(color, coin);
     }
-    static public void DeliverCoin(GameObject obj)
+
+    private void DeliverCoin(Color color)
     {
-        Destroy(PickedupCoins.transform.Find(obj.name).gameObject);
+        Destroy(m_CoinMap[color].gameObject);
     }
 
 

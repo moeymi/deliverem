@@ -93,7 +93,7 @@ public class GameSolver
 
     public async Task<Stack<GameState>> Solve(GameState startGamestate)
     {
-        int heuristic = UIManager.DropdownValue;
+        int heuristic = UIManager.HeuristicValue;
         isSolving = true;
         Stack<GameState> finalPath = (await RunSolver(startGamestate, heuristic));
         isSolving = false;
